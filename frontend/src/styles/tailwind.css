@@ -1,0 +1,80 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Core Colors */
+    --color-background: #FDFCF8; /* warm off-white */
+    --color-foreground: #2C3E50; /* deep charcoal */
+    --color-border: #E8E8E8; /* light gray */
+    --color-input: #FFFFFF; /* white */
+    --color-ring: #E67E22; /* warm terracotta */
+    
+    /* Card Colors */
+    --color-card: #FFFFFF; /* white */
+    --color-card-foreground: #2C3E50; /* deep charcoal */
+    
+    /* Popover Colors */
+    --color-popover: #FFFFFF; /* white */
+    --color-popover-foreground: #2C3E50; /* deep charcoal */
+    
+    /* Muted Colors */
+    --color-muted: #F8F9FA; /* light gray */
+    --color-muted-foreground: #7F8C8D; /* sophisticated gray */
+    
+    /* Primary Colors */
+    --color-primary: #E67E22; /* warm terracotta */
+    --color-primary-foreground: #FFFFFF; /* white */
+    
+    /* Secondary Colors */
+    --color-secondary: #2ECC71; /* fresh herb green */
+    --color-secondary-foreground: #FFFFFF; /* white */
+    
+    /* Accent Colors */
+    --color-accent: #F39C12; /* golden saffron */
+    --color-accent-foreground: #FFFFFF; /* white */
+    
+    /* Success Colors */
+    --color-success: #27AE60; /* deeper green */
+    --color-success-foreground: #FFFFFF; /* white */
+    
+    /* Warning Colors */
+    --color-warning: #F1C40F; /* bright golden yellow */
+    --color-warning-foreground: #2C3E50; /* deep charcoal */
+    
+    /* Error/Destructive Colors */
+    --color-error: #E74C3C; /* warm red */
+    --color-error-foreground: #FFFFFF; /* white */
+    --color-destructive: #E74C3C; /* warm red */
+    --color-destructive-foreground: #FFFFFF; /* white */
+  }
+
+  * {
+    @apply border-border;
+  }
+  
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+@layer components {
+  .shadow-warm {
+    box-shadow: 0 4px 12px rgba(230, 126, 34, 0.08);
+  }
+  
+  .shadow-warm-sm {
+    box-shadow: 0 2px 8px rgba(230, 126, 34, 0.06);
+  }
+  
+  .shadow-warm-lg {
+    box-shadow: 0 8px 24px rgba(230, 126, 34, 0.12);
+  }
+}

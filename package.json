@@ -1,0 +1,22 @@
+{
+  "name": "homecook-connect-monorepo",
+  "version": "1.0.0",
+  "description": "HomeCook Connect - Full Stack Application",
+  "main": "start.js",
+  "scripts": {
+    "start": "node start.js",
+    "dev": "node start.js --dev",
+    "build": "cd frontend && npm run build",
+    "rebuild": "node start.js --rebuild",
+    "dev:frontend": "cd frontend && npm start",
+    "dev:backend": "cd backend && npm run dev",
+    "install:all": "npm install && cd frontend && npm install && cd ../backend && npm install"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "child_process": "^1.0.2",
+    "path": "^0.12.7",
+    "fs": "0.0.1-security"
+  }
+}
