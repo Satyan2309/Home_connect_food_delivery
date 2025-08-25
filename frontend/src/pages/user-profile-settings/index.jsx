@@ -8,16 +8,20 @@ import PreferencesSection from './components/PreferencesSection';
 import AccountSettingsSection from './components/AccountSettingsSection';
 import Icon from '../../components/AppIcon';
 import Image from '../../components/AppImage';
+import { useAuth } from '../../contexts/AuthContext';
+import userService from '../../utils/userService';
 
 const UserProfileSettings = () => {
   const [activeSection, setActiveSection] = useState('personal');
+  const { userEmail, userName } = useAuth();
   const [userInfo, setUserInfo] = useState({
-    firstName: 'Sarah',
-    lastName: 'Johnson',
-    email: 'sarah.johnson@email.com',
-    phone: '+1 (555) 123-4567',
-    profileImage: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face'
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    profileImage: ''
   });
+  const [isLoading, setIsLoading] = useState(true);
 
   const [addresses, setAddresses] = useState([
     {
@@ -26,7 +30,7 @@ const UserProfileSettings = () => {
       label: 'Home',
       street: '123 Oak Street',
       apartment: 'Apt 2B',
-      city: 'San Francisco',
+      city: 'Francisco',
       state: 'CA',
       zipCode: '94102',
       instructions: 'Ring doorbell twice',
@@ -38,7 +42,7 @@ const UserProfileSettings = () => {
       label: 'Office',
       street: '456 Market Street',
       apartment: 'Suite 1200',
-      city: 'San Francisco',
+      city:"delhi",
       state: 'CA',
       zipCode: '94105',
       instructions: 'Leave with reception',
@@ -116,12 +120,71 @@ const UserProfileSettings = () => {
   ];
 
   useEffect(() => {
+    // Fetch user profile data when component mounts
+    const fetchUserProfile = async () => {
+      try {
+        setIsLoading(true);
+        const userData = await userService.getUserProfile();
+        
+        // If we have user data from the API
+        if (userData) {
+          // Split the full name into first and last name
+          const nameParts = userData.fullName ? userData.fullName.split(' ') : [];
+          const firstName = nameParts[0] || '';
+          const lastName = nameParts.slice(1).join(' ') || '';
+          
+          setUserInfo({
+            firstName,
+            lastName,
+            email: userData.email || userEmail || '',
+            phone: userData.phone || '',
+            profileImage: userData.profileImage || ''
+          });
+        } else {
+          // If no user data from API, use data from AuthContext
+          if (userName) {
+            const nameParts = userName.split(' ');
+            const firstName = nameParts[0] || '';
+            const lastName = nameParts.slice(1).join(' ') || '';
+            
+            setUserInfo({
+              firstName,
+              lastName,
+              email: userEmail || '',
+              phone: '',
+              profileImage: ''
+            });
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching user profile:', error);
+        // If API call fails, still try to use data from AuthContext
+        if (userName) {
+          const nameParts = userName.split(' ');
+          const firstName = nameParts[0] || '';
+          const lastName = nameParts.slice(1).join(' ') || '';
+          
+          setUserInfo({
+            firstName,
+            lastName,
+            email: userEmail || '',
+            phone: '',
+            profileImage: ''
+          });
+        }
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    fetchUserProfile();
+    
     // Check for saved language preference
     const savedLanguage = localStorage.getItem('language') || 'en';
     if (savedLanguage !== preferences.language) {
       setPreferences(prev => ({ ...prev, language: savedLanguage }));
     }
-  }, []);
+  }, [userEmail, userName, preferences.language]);
 
   const handleUpdateInfo = async (newInfo) => {
     try {
@@ -251,6 +314,17 @@ const UserProfileSettings = () => {
   };
 
   const renderActiveSection = () => {
+    if (isLoading) {
+      return (
+        <div className="bg-card rounded-lg border border-border p-6 shadow-warm-sm flex items-center justify-center">
+          <div className="text-center py-8">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+            <p className="text-muted-foreground">Loading your profile information...</p>
+          </div>
+        </div>
+      );
+    }
+
     switch (activeSection) {
       case 'personal':
         return (
@@ -353,7 +427,11 @@ const UserProfileSettings = () => {
               <div className="mt-6 pt-6 border-t border-border">
                 <div className="flex items-center space-x-3">
                   <div className="w-10 h-10 rounded-full overflow-hidden bg-muted">
-                    {userInfo.profileImage ? (
+                    {isLoading ? (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <div className="animate-pulse bg-muted-foreground/20 w-full h-full"></div>
+                      </div>
+                    ) : userInfo.profileImage ? (
                       <Image
                         src={userInfo.profileImage}
                         alt="Profile"
@@ -366,12 +444,21 @@ const UserProfileSettings = () => {
                     )}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="font-medium text-sm text-foreground truncate">
-                      {userInfo.firstName} {userInfo.lastName}
-                    </div>
-                    <div className="text-xs text-muted-foreground truncate">
-                      {userInfo.email}
-                    </div>
+                    {isLoading ? (
+                      <>
+                        <div className="h-4 bg-muted-foreground/20 rounded animate-pulse w-24 mb-1"></div>
+                        <div className="h-3 bg-muted-foreground/20 rounded animate-pulse w-32"></div>
+                      </>
+                    ) : (
+                      <>
+                        <div className="font-medium text-sm text-foreground truncate">
+                          {userInfo.firstName} {userInfo.lastName}
+                        </div>
+                        <div className="text-xs text-muted-foreground truncate">
+                          {userInfo.email}
+                        </div>
+                      </>
+                    )}
                   </div>
                 </div>
               </div>

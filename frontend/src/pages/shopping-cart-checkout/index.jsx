@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
+import { toast } from 'react-hot-toast';
 import Header from '../../components/ui/Header';
 import Icon from '../../components/AppIcon';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
+import cartService from '../../utils/cartService';
 
 // Import components
 import CartItem from './components/CartItem';
@@ -45,91 +47,79 @@ const ShoppingCartCheckout = () => {
   // Order state
   const [orderDetails, setOrderDetails] = useState(null);
 
-  // Mock data initialization
+  // Real data initialization
   useEffect(() => {
-    // Mock cart items
-    const mockCartItems = [
-      {
-        id: '1',
-        name: 'Homemade Chicken Biryani',
-        chefName: 'Priya Sharma',
-        price: 18.99,
-        originalPrice: 22.99,
-        quantity: 2,
-        image: 'https://images.unsplash.com/photo-1563379091339-03246963d51a?w=300&h=200&fit=crop',
-        specialInstructions: 'Extra spicy please'
-      },
-      {
-        id: '2',
-        name: 'Authentic Pad Thai',
-        chefName: 'Chef Somchai',
-        price: 15.50,
-        quantity: 1,
-        image: 'https://images.unsplash.com/photo-1559314809-0f31657def5e?w=300&h=200&fit=crop',
-        specialInstructions: ''
-      },
-      {
-        id: '3',
-        name: 'Fresh Caesar Salad',
-        chefName: 'Maria Rodriguez',
-        price: 12.99,
-        quantity: 1,
-        image: 'https://images.unsplash.com/photo-1546793665-c74683f339c1?w=300&h=200&fit=crop',
-        specialInstructions: 'No croutons'
+    const fetchCartData = async () => {
+      try {
+        setIsLoading(true);
+        // Fetch real cart data from the API
+        const cartData = await cartService.getCart();
+        setCartItems(cartData.items);
+        setPromoCode(cartData.promoCode);
+        setIsLoading(false);
+      } catch (error) {
+        console.error('Failed to fetch cart data:', error);
+        toast.error('Failed to load your cart. Please try again.');
+        setIsLoading(false);
       }
-    ];
+    };
 
-    // Mock saved addresses
-    const mockAddresses = [
-      {
-        id: '1',
-        type: 'home',
-        street: '123 Oak Street',
-        apartment: 'Apt 4B',
-        city: 'San Francisco',
-        state: 'CA',
-        zipCode: '94102',
-        fullAddress: '123 Oak Street, Apt 4B, San Francisco, CA 94102',
-        instructions: 'Ring doorbell twice',
-        isDefault: true
-      },
-      {
-        id: '2',
-        type: 'work',
-        street: '456 Market Street',
-        apartment: 'Suite 200',
-        city: 'San Francisco',
-        state: 'CA',
-        zipCode: '94105',
-        fullAddress: '456 Market Street, Suite 200, San Francisco, CA 94105',
-        instructions: 'Leave with reception',
-        isDefault: false
-      }
-    ];
+    // Fetch user addresses (mock for now, would be from userService in real app)
+    const fetchUserData = () => {
+      // Mock saved addresses
+      const mockAddresses = [
+        {
+          id: '1',
+          type: 'home',
+          street: '123 Oak Street',
+          apartment: 'Apt 4B',
+          city: 'Delhi',
+          state: 'CA',
+          zipCode: '94102',
+          fullAddress: '123 Oak Street, Apt 4B, delhi, CA 94102',
+          instructions: 'Ring doorbell twice',
+          isDefault: true
+        },
+        {
+          id: '2',
+          type: 'work',
+          street: '456 Market Street',
+          apartment: 'Suite 200',
+          city: 'Delhi',
+          state: 'CA',
+          zipCode: '94105',
+          fullAddress: 'Delhi,India',
+          instructions: 'Leave with reception',
+          isDefault: false
+        }
+      ];
 
-    // Mock saved cards
-    const mockCards = [
-      {
-        id: '1',
-        brand: 'Visa',
-        last4: '4242',
-        expiry: '12/26',
-        name: 'John Doe'
-      },
-      {
-        id: '2',
-        brand: 'Mastercard',
-        last4: '8888',
-        expiry: '08/25',
-        name: 'John Doe'
-      }
-    ];
+      // Mock saved cards
+      const mockCards = [
+        {
+          id: '1',
+          brand: 'Visa',
+          last4: '4242',
+          expiry: '12/26',
+          name: 'John Doe'
+        },
+        {
+          id: '2',
+          brand: 'Mastercard',
+          last4: '8888',
+          expiry: '08/25',
+          name: 'John Doe'
+        }
+      ];
 
-    setCartItems(mockCartItems);
-    setSavedAddresses(mockAddresses);
-    setSelectedAddress(mockAddresses[0]);
-    setSavedCards(mockCards);
-    setContactPhone('+1 (555) 123-4567');
+      setSavedAddresses(mockAddresses);
+      setSelectedAddress(mockAddresses[0]);
+      setSavedCards(mockCards);
+      setContactPhone('+1 (555) 123-4567');
+    };
+
+    fetchCartData();
+    fetchUserData();
   }, []);
 
   // Calculate totals
@@ -141,24 +131,85 @@ const ShoppingCartCheckout = () => {
   const total = subtotal - promoDiscount + actualDeliveryFee + taxes;
 
   // Cart handlers
-  const handleUpdateQuantity = (itemId, newQuantity) => {
-    setCartItems(items => 
-      items.map(item => 
-        item.id === itemId ? { ...item, quantity: newQuantity } : item
-      )
-    );
+  const handleUpdateQuantity = async (itemId, newQuantity) => {
+    try {
+      setIsLoading(true);
+      await cartService.updateCartItem({
+        cartItemId: itemId,
+        quantity: newQuantity
+      });
+      
+      // Refresh cart data
+      const cartData = await cartService.getCart();
+      setCartItems(cartData.items);
+      setPromoCode(cartData.promoCode);
+      setIsLoading(false);
+    } catch (error) {
+      console.error('Failed to update cart item:', error);
+      toast.error('Failed to update item quantity. Please try again.');
+      setIsLoading(false);
+    }
   };
 
-  const handleRemoveItem = (itemId) => {
-    setCartItems(items => items.filter(item => item.id !== itemId));
+  const handleRemoveItem = async (itemId) => {
+    try {
+      setIsLoading(true);
+      await cartService.removeFromCart(itemId);
+      
+      // Refresh cart data
+      const cartData = await cartService.getCart();
+      setCartItems(cartData.items);
+      setPromoCode(cartData.promoCode);
+      setIsLoading(false);
+    } catch (error) {
+      console.error('Failed to remove cart item:', error);
+      toast.error('Failed to remove item from cart. Please try again.');
+      setIsLoading(false);
+    }
   };
 
-  const handleUpdateInstructions = (itemId, instructions) => {
-    setCartItems(items => 
-      items.map(item => 
-        item.id === itemId ? { ...item, specialInstructions: instructions } : item
-      )
-    );
+  const handleUpdateInstructions = async (itemId, instructions) => {
+    try {
+      setIsLoading(true);
+      // Get the current item to preserve its quantity
+      const currentItem = cartItems.find(item => item.id === itemId);
+      if (!currentItem) return;
+      
+      await cartService.updateCartItem({
+        cartItemId: itemId,
+        quantity: currentItem.quantity,
+        specialInstructions: instructions
+      });
+      
+      // Refresh cart data
+      const cartData = await cartService.getCart();
+      setCartItems(cartData.items);
+      setPromoCode(cartData.promoCode);
+      setIsLoading(false);
+    } catch (error) {
+      console.error('Failed to update special instructions:', error);
+      toast.error('Failed to update special instructions. Please try again.');
+      setIsLoading(false);
+    }
+  };
+
+  // Clear cart handler
+  const handleClearCart = async () => {
+    try {
+      setIsLoading(true);
+      await cartService.clearCart();
+      
+      // Refresh cart data
+      const cartData = await cartService.getCart();
+      setCartItems(cartData.items);
+      setPromoCode(null);
+      toast.success('Cart cleared successfully!');
+      setIsLoading(false);
+    } catch (error) {
+      console.error('Failed to clear cart:', error);
+      toast.error('Failed to clear cart. Please try again.');
+      setIsLoading(false);
+    }
   };
 
   // Address handlers
@@ -179,13 +230,41 @@ const ShoppingCartCheckout = () => {
   };
 
   // Promo code handlers
-  const handleApplyPromo = (code) => {
-    setPromoCode(code);
-    setShowPromoModal(false);
+  const handleApplyPromo = async (code) => {
+    try {
+      setIsLoading(true);
+      await cartService.applyPromoCode(code);
+      
+      // Refresh cart data
+      const cartData = await cartService.getCart();
+      setCartItems(cartData.items);
+      setPromoCode(cartData.promoCode);
+      setShowPromoModal(false);
+      toast.success('Promo code applied successfully!');
+      setIsLoading(false);
+    } catch (error) {
+      console.error('Failed to apply promo code:', error);
+      toast.error(error.toString() || 'Failed to apply promo code. Please try again.');
+      setIsLoading(false);
+    }
   };
 
-  const handleRemovePromo = () => {
-    setPromoCode(null);
+  const handleRemovePromo = async () => {
+    try {
+      setIsLoading(true);
+      await cartService.removePromoCode();
+      
+      // Refresh cart data
+      const cartData = await cartService.getCart();
+      setCartItems(cartData.items);
+      setPromoCode(null);
+      toast.success('Promo code removed successfully!');
+      setIsLoading(false);
+    } catch (error) {
+      console.error('Failed to remove promo code:', error);
+      toast.error('Failed to remove promo code. Please try again.');
+      setIsLoading(false);
+    }
   };
 
   // Step navigation
@@ -215,12 +294,27 @@ const ShoppingCartCheckout = () => {
   const handlePlaceOrder = async () => {
     setIsLoading(true);
 
-    // Simulate order processing
-    setTimeout(() => {
+    try {
+      // Create order data
+      const orderData = {
+        deliveryAddress: selectedAddress.id,
+        deliveryTime: selectedTimeSlot.id,
+        contactPhone: contactPhone,
+        paymentMethod: selectedPaymentMethod.id,
+        paymentDetails: selectedPaymentMethod.cardId ? {
+          cardId: selectedPaymentMethod.cardId
+        } : {}
+      };
+
+      // In a real implementation, this would call the order service
+      // const response = await orderService.createOrder(orderData);
+      
+      // For now, simulate order creation
       const orderNumber = `HC${Date.now().toString().slice(-6)}`;
       const uniqueChefs = [...new Set(cartItems.map(item => item.chefName))];
       
-      setOrderDetails({
+      // Simulate API response
+      const orderResponse = {
         orderNumber,
         items: cartItems,
         deliveryAddress: selectedAddress,
@@ -228,11 +322,20 @@ const ShoppingCartCheckout = () => {
         paymentMethod: selectedPaymentMethod,
         total,
         chefs: uniqueChefs.map(name => ({ name }))
-      });
-
+      };
+      
+      setOrderDetails(orderResponse);
+      
+      // Clear the cart after successful order
+      await cartService.clearCart();
+      
       setIsLoading(false);
       setShowConfirmation(true);
-    }, 2000);
+    } catch (error) {
+      console.error('Failed to place order:', error);
+      toast.error('Failed to place your order. Please try again.');
+      setIsLoading(false);
+    }
   };
 
   // Validation
@@ -397,6 +500,18 @@ const ShoppingCartCheckout = () => {
                   iconPosition="left"
                 >
                   Back
+                </Button>
+              )}
+              {currentStep === 'cart' && cartItems.length > 0 && (
+                <Button
+                  variant="outline"
+                  onClick={handleClearCart}
+                  iconName="Trash2"
+                  iconPosition="left"
+                  className="text-error hover:text-error"
+                  disabled={isLoading}
+                >
+                  Clear Cart
                 </Button>
               )}
             </div>

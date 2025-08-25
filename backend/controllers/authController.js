@@ -97,16 +97,39 @@ const generateToken = (id) => {
 // @route   POST /api/auth/google
 // @access  Public
 const googleAuth = asyncHandler(async (req, res) => {
-    const { token, profile } = req.body;
+    const { code, profile } = req.body;
     
-    // In production, verify the token with Google OAuth API
-    // For now, we'll trust the client-provided profile data
+    // Log the request for debugging
+    console.log('Google auth request received:', { 
+        hasCode: !!code, 
+        hasProfile: !!profile,
+        profileData: profile ? { 
+            id: profile.id,
+            hasEmail: !!profile.email,
+            hasName: !!profile.name 
+        } : null
+    });
+    
+    // Validate required data
+    if (!profile || !profile.email) {
+        console.error('Missing required profile data for Google auth');
+        res.status(400);
+        throw new Error('Invalid Google authentication data. Missing profile information.');
+    }
     
     try {
+        // In production, you would verify the code with Google OAuth API
+        // For example, exchange the code for tokens using Google's OAuth API
+        // const tokenResponse = await exchangeCodeForTokens(code);
+        // const verifiedProfile = await verifyGoogleTokenAndGetProfile(tokenResponse.id_token);
+        
+        // For now, we'll trust the client-provided profile data
+        
         // Check if user exists
         let user = await User.findOne({ email: profile.email });
         
         if (!user) {
+            console.log(`Creating new user with Google auth: ${profile.email}`);
             // Create new user if doesn't exist
             user = await User.create({
                 fullName: profile.name,
@@ -117,6 +140,7 @@ const googleAuth = asyncHandler(async (req, res) => {
                 googleId: profile.id
             });
         } else {
+            console.log(`Existing user logging in with Google: ${profile.email}`);
             // Update existing user with Google ID if not already set
             if (!user.googleId) {
                 user.googleId = profile.id;
@@ -124,16 +148,21 @@ const googleAuth = asyncHandler(async (req, res) => {
             }
         }
         
+        // Generate JWT token
+        const token = generateToken(user._id);
+        
+        // Send successful response
         res.json({
             _id: user.id,
             fullName: user.fullName,
             email: user.email,
             userType: user.userType,
-            token: generateToken(user._id),
+            token: token,
         });
     } catch (error) {
+        console.error('Google authentication error:', error);
         res.status(400);
-        throw new Error('Google authentication failed');
+        throw new Error(`Google authentication failed: ${error.message}`);
     }
 });
 

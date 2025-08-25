@@ -1,8 +1,8 @@
 import axios from 'axios';
 
 // Create an axios instance with default config
-// Use relative URL for API calls when frontend and backend are on the same origin
-const API_URL = '/api';
+// Use absolute URL for API calls to ensure consistent behavior
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:7071/api';
 
 const api = axios.create({
   baseURL: API_URL,

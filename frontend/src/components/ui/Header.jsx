@@ -7,38 +7,37 @@ import authService from '../../utils/authService';
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [cartCount, setCartCount] = useState(0);
-  const [userRole, setUserRole] = useState('customer'); // 'customer' or 'chef'
+  const [userRole, setUserRole] = useState('customer'); 
   const [currentLocation, setCurrentLocation] = useState('Select Location');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Simulate cart count from localStorage or context
+  
     const savedCartCount = localStorage.getItem('cartCount') || 0;
     setCartCount(parseInt(savedCartCount));
 
-    // Get authentication status
+ 
     const authStatus = authService.isAuthenticated();
     setIsAuthenticated(authStatus);
 
-    // Get user role from localStorage or context
+    
     const savedUserRole = localStorage.getItem('userRole') || 'customer';
     setUserRole(savedUserRole);
 
-    // Simulate current location
+    
     const savedLocation = localStorage.getItem('currentLocation') || 'Select Location';
     setCurrentLocation(savedLocation);
     
-    // Listen for location updates from other components
+  
     const handleLocationUpdate = (event) => {
       const { location } = event.detail;
       setCurrentLocation(location);
     };
     
     document.addEventListener('locationUpdated', handleLocationUpdate);
-    
-    // Clean up event listener
+   
     return () => {
       document.removeEventListener('locationUpdated', handleLocationUpdate);
     };
@@ -49,20 +48,18 @@ const Header = () => {
   };
 
   const handleLocationClick = () => {
-    // Check if we're already on the home page
+
     if (location.pathname === '/') {
-      // If already on home page, just trigger the location selector
       document.dispatchEvent(new CustomEvent('openLocationSelector'));
     } else {
-      // Navigate to the home page where the LocationSelector component is available
+      
       navigate('/');
       
-      // After navigation, trigger the location selector to open
-      // We use setTimeout to ensure the navigation has completed
+
       setTimeout(() => {
-        // Create a custom event to trigger the location selector to open
+        
         document.dispatchEvent(new CustomEvent('openLocationSelector'));
-      }, 300); // Increased timeout to ensure navigation completes
+      }, 300); 
     }
   };
 
@@ -70,17 +67,13 @@ const Header = () => {
     try {
       const newRole = userRole === 'customer' ? 'chef' : 'customer';
       
-      // In a real implementation, this would call an API endpoint to update the user's role
-      // For now, we'll just update localStorage to maintain the current functionality
-      // This would be replaced with an actual API call in production
       
-      // Simulate API delay
       await new Promise(resolve => setTimeout(resolve, 300));
       
-      // Update local state
+    
       setUserRole(newRole);
       
-      // Update localStorage
+ 
       localStorage.setItem('userRole', newRole);
       
       console.log(`Role switched to: ${newRole}`);
@@ -144,7 +137,7 @@ const Header = () => {
             </button>
             
             <div className="flex items-center space-x-4 text-xs text-muted-foreground">
-              <span>Free delivery on orders ₹25+</span>
+              <span>Free delivery on orders ₹250+</span>
             </div>
           </div>
         </div>

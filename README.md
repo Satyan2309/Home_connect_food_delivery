@@ -73,8 +73,8 @@ The application is set up to work with the following external services:
    npm start
    ```
    
-   This will build the frontend and serve it along with the backend API on port 5000.
-   Access the application at: http://localhost:5000
+   This will build the frontend and serve it along with the backend API on port 7071.
+   Access the application at: http://localhost:7071
    
    ### Development Mode (Dual Servers)
    ```
@@ -83,8 +83,8 @@ The application is set up to work with the following external services:
    ```
    
    This will start:
-   - Backend server on port 5000 (http://localhost:5000/api)
-   - Frontend development server on port 4028 (http://localhost:4028)
+   - Backend server on port 7071 (http://localhost:7071/api)
+   - Frontend development server on port 7070 (http://localhost:7070)
    
    ### Other Useful Commands
    ```
@@ -92,8 +92,8 @@ The application is set up to work with the following external services:
    npm run rebuild
    
    # Run frontend and backend separately (legacy method)
-   npm run dev:frontend  # Starts frontend on port 4028
-   npm run dev:backend   # Starts backend on port 5000
+   npm run dev:frontend  # Starts frontend on port 7070
+   npm run dev:backend   # Starts backend on port 7071
    ```
 
 ## API Keys for Production

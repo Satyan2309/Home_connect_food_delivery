@@ -6,7 +6,7 @@ const connectionService = {
   checkConnection: async () => {
     try {
       // Make a simple request to the server health endpoint
-      // This endpoint should be implemented on the backend
+      // This endpoint is implemented on the backend
       const response = await api.get('/health');
       return {
         connected: true,
@@ -38,6 +38,7 @@ const connectionService = {
       await api.get('/health');
       return true;
     } catch (error) {
+      console.error('API connection error:', error);
       return false;
     }
   }

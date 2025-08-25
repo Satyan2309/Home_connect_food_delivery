@@ -92,7 +92,7 @@ const ConnectionStatus = () => {
       
       <div className="mt-4 text-sm text-gray-600">
         <p>Status code: {connectionStatus.status}</p>
-        <p className="mt-1">API URL: {import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}</p>
+        <p className="mt-1">API URL: {'http://localhost:7071/api'}</p>
       </div>
     </div>
   );

@@ -118,7 +118,7 @@ const LocationDetector = ({ onComplete }) => {
               latitude,
               longitude,
               address: "123 Main Street, Downtown",
-              city: "San Francisco",
+              city: "delhi",
               state: "CA",
               zipCode: "94102",
               country: "United States"
@@ -420,7 +420,7 @@ const LocationDetector = ({ onComplete }) => {
                     value={manualAddress.city}
                     onChange={handleManualAddressChange}
                     className="w-full p-2 border border-muted rounded-md"
-                    placeholder="San Francisco"
+                    placeholder="Francisco"
                     required
                   />
                 </div>

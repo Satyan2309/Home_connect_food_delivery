@@ -210,7 +210,7 @@ const Footer = () => {
             © {currentYear} HomeCook Connect. All rights reserved.
           </div>
           <div className="flex items-center space-x-4">
-            <span>Available in New York, San Francisco, Los Angeles</span>
+            <span>Delhi</span>
             <div className="flex items-center space-x-1">
               <Icon name="MapPin" size={12} />
               <span>USA</span>

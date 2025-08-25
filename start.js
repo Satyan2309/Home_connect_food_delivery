@@ -34,8 +34,8 @@ function startDevMode() {
     shell: true
   });
   
-  console.log('Backend server started on port 5000');
-  console.log('Access the API at: http://localhost:5000/api');
+  console.log('Backend server started on port 7071');
+  console.log('Access the API at: http://localhost:7071/api');
   
   // Start frontend development server
   const frontendProcess = spawn('npm', ['start'], {
@@ -44,8 +44,8 @@ function startDevMode() {
     shell: true
   });
   
-  console.log('Frontend development server started on port 4028');
-  console.log('Access the application at: http://localhost:4028');
+  console.log('Frontend development server started on port 7070');
+  console.log('Access the application at: http://localhost:7070');
   
   // Handle process termination
   process.on('SIGINT', () => {
@@ -93,8 +93,8 @@ function startBackend() {
     shell: true
   });
   
-  console.log('Server started on port 5000');
-  console.log('Access the application at: http://localhost:5000');
+  console.log('Server started on port 7071');
+  console.log('Access the application at: http://localhost:7071');
   
   serverProcess.on('close', (code) => {
     console.log(`Backend server process exited with code ${code}`);

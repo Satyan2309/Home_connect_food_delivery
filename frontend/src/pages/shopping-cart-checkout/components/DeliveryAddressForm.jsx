@@ -43,7 +43,7 @@ const DeliveryAddressForm = ({ savedAddresses, selectedAddress, onAddressSelect,
             setNewAddress(prev => ({
               ...prev,
               street: '123 Main Street',
-              city: 'San Francisco',
+              city: 'Francisco',
               state: 'CA',
               zipCode: '94102'
             }));
@@ -236,7 +236,7 @@ const DeliveryAddressForm = ({ savedAddresses, selectedAddress, onAddressSelect,
             <Input
               label="City"
               type="text"
-              placeholder="San Francisco"
+              placeholder="delhi"
               value={newAddress.city}
               onChange={(e) => handleInputChange('city', e.target.value)}
               error={errors.city}

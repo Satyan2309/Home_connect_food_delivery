@@ -13,7 +13,10 @@ connectDB();
 const app = express();
 
 // Middleware
-app.use(cors());
+app.use(cors({
+    origin: 'http://localhost:7070',
+    credentials: true
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
@@ -23,6 +26,7 @@ app.use('/api/users', require('./routes/userRoutes'));
 app.use('/api/meals', require('./routes/mealRoutes'));
 app.use('/api/orders', require('./routes/orderRoutes'));
 app.use('/api/payment', require('./routes/paymentRoutes')); // Payment routes for Stripe integration
+app.use('/api/cart', require('./routes/cartRoutes')); // Cart routes for shopping cart functionality
 
 // Serve static files from the React frontend app
 app.use(express.static(path.join(__dirname, '../frontend/build')));
@@ -41,6 +45,6 @@ app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, '../frontend/build/index.html'));
 });
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 7071;
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}, serving both API and frontend`));
