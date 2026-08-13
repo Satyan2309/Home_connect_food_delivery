@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200" fill="none">
+  <!-- Background circle -->
+  <circle cx="100" cy="100" r="100" fill="#E5E7EB"/>
+  
+  <!-- Person silhouette -->
+  <path d="M100 50C83.4315 50 70 63.4315 70 80C70 96.5685 83.4315 110 100 110C116.569 110 130 96.5685 130 80C130 63.4315 116.569 50 100 50Z" fill="#9CA3AF"/>
+  <path d="M155 160C155 131.386 130.614 110 100 110C69.3857 110 45 131.386 45 160" stroke="#9CA3AF" stroke-width="20"/>
+</svg>
